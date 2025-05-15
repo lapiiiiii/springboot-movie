@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>评论列表</title>
+  <style>
+    :root {
+      --primary-color: #4285f4;
+      --success-color: #34a853;
+      --text-color: #333;
+      --light-text: #666;
+      --border-color: #e0e0e0;
+      --bg-color: #f9f9f9;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: #fff;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .comment-header {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 25px;
+      color: var(--text-color);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    .comment-form {
+      background-color: var(--bg-color);
+      border-radius: 8px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .form-title {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 15px;
+      color: var(--text-color);
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      resize: vertical;
+      min-height: 100px;
+      font-family: inherit;
+      font-size: 14px;
+      transition: border 0.3s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+    }
+
+    .submit-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+    }
+
+    .submit-btn:hover {
+      background-color: #3367d6;
+    }
+
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background-color: #e6f4ea;
+      color: var(--success-color);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .comment-list {
+      margin-top: 30px;
+    }
+
+    .comment-item {
+      display: flex;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .comment-item:last-child {
+      border-bottom: none;
+    }
+
+    .comment-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #e0e0e0;
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .comment-content {
+      flex-grow: 1;
+    }
+
+    .comment-meta {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .comment-author {
+      font-weight: 600;
+      margin-right: 10px;
+    }
+
+    .comment-time {
+      color: var(--light-text);
+      font-size: 13px;
+    }
+
+    .comment-text {
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 30px;
+      padding: 15px 0;
+    }
+
+    .pagination a {
+      color: var(--primary-color);
+      text-decoration: none;
+      padding: 6px 12px;
+      margin: 0 5px;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .pagination a:hover {
+      background-color: rgba(66, 133, 244, 0.1);
+    }
+
+    .pagination span {
+      padding: 6px 12px;
+      margin: 0 5px;
+      color: var(--light-text);
+      font-size: 14px;
+    }
+
+    .no-comments {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--light-text);
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+<!-- 提交成功提示 -->
+<div class="alert alert-success" th:if="${successMsg}">
+  <span th:text="${successMsg}"></span>
+</div>
+
+<h1 class="comment-header">评论</h1>
+
+<!-- 评论输入框 -->
+<div class="comment-form">
+  <h3 class="form-title">发表你的评论</h3>
+  <form method="post" th:action="@{/comments/save}">
+    <input type="hidden" name="movieId" th:value="${movieId}">
+
+    <div>
+        <textarea name="content" rows="5" th:required="true"
+                  placeholder="分享你的想法...（至少5个字）"></textarea>
+    </div>
+
+    <button type="submit" class="submit-btn">提交评论</button>
+  </form>
+</div>
+
+<!-- 评论列表 -->
+<div class="comment-list">
+  <div th:if="${#lists.isEmpty(comments)}">
+    <div class="no-comments">
+      <p>还没有评论，快来发表第一条评论吧！</p>
+    </div>
+  </div>
+
+  <div class="comment-item" th:each="comment : ${comments}">
+    <div class="comment-avatar" th:text="${comment.username.substring(0,1).toUpperCase()}"></div>
+    <div class="comment-content">
+      <div class="comment-meta">
+        <span class="comment-author" th:text="${comment.username}"></span>
+        <span class="comment-time"
+              th:text="${#temporals.format(comment.createTime, 'yyyy-MM-dd HH:mm')}"></span>
+      </div>
+      <div class="comment-text" th:text="${comment.content}"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 分页导航 -->
+<div class="pagination">
+  <a th:href="@{|/comments?movieId=${movieId}&pageNum=1|}"
+     th:if="${currentPage > 1}">首页</a>
+
+  <a th:href="@{|/comments?movieId=${movieId}&pageNum=${currentPage - 1}|}"
+     th:if="${currentPage > 1}">上一页</a>
+
+  <span>第 [[${currentPage}]] 页 / 共 [[${totalPages}]] 页</span>
+
+  <a th:href="@{|/comments?movieId=${movieId}&pageNum=${currentPage + 1}|}"
+     th:if="${currentPage < totalPages}">下一页</a>
+
+  <a th:href="@{|/comments?movieId=${movieId}&pageNum=${totalPages}|}"
+     th:if="${currentPage < totalPages}">末页</a>
+</div>
+</body>
+</html>
