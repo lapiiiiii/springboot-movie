@@ -4,3 +4,4 @@
 3.遇到的问题以及解决方法：
     3.1 分页插件出现 第 1 页 / 共 0 页 的问题，解决方法：配置MybatisPlusConfig
     3.2 MapperScan注解用不了，解决方法：导入了mybatis依赖
+4.运行支付宝沙箱 教程：https://blog.csdn.net/ljw_993013755/article/details/138825736
